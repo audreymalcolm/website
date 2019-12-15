@@ -1,0 +1,200 @@
+---
+title: "Project 2"
+output:
+  html_document: default
+  pdf_document: default
+---
+##Audrey Malcolm aem3886
+
+
+##Introduction
+```{R}
+data(package=.packages(all.available=TRUE))
+library(datasets)
+library(tidyverse)
+infert<-as.data.frame(infert)
+?infert
+```
+  The infertility dataset looks at infertility rates in women after having a spontaneous or an induced abortion as compared to a control group of women. The dataset looks at other factors like a woman's education, age, number of prior pregnancies, and number of prior abortions. Parity is the number of pregnancies that have been brought to gestation age and is the fertility measure. Women in case 1 were experiencing infertility issues while women in case 0 were not experiencing infertility issues.
+
+
+##Manova, Anova, T Tests
+```{R}
+man1<-manova(cbind(spontaneous,induced,age, parity)~case, data=infert)
+summary(man1)
+summary.aov(man1)
+pairwise.t.test(infert$case, infert$spontaneous, p.adj="none")
+
+.05/16
+```
+  A MANOVA test was conducted in order to test the effect of infertility on number of spontaneous and induced abortions, parity, and age of the women. Because the infertility p value is significant, the null hypothesis is rejected. So, for at least one dependent variable (spontaneous abortions, induced abortions, parity, and age), the infertility mean is significantly different with p<1.353e-08. 
+  From there, the ANOVA test for each dependent variable was conducted. The p value for spontaneous abortions is significant with p=3.48e-09. However, the mean age, parity, and induced abortions across parity were not significant. Therefore, for spontaneous abortions, at least of mean differs, but for parity, age and, induced abortions, the mean does not vary across case.
+  If unadjusted, the probability of a type 1 error is 0.05. The Bonferroni method was used to control Type 1 error rates. Because 1 manova, 3 anovas, and (4x3)=12 t tests were conducted, the adjusted p value is 0.05/16 = 0.0031. Still, with the adjusted p value, the manova and anova for induced and spontaneous abortions are still significant and the previous analyses stand.
+  In order to determine which groups within the number of induced and spontaneous abortions were different, a pairwise t test was conducted. It shows that women with 1 or spontaneous abortion face infertility issues in their second pregnancy.
+  
+##Randomization Test <- make graph for null statistic
+```{R}
+infert%>%group_by(case)%>%summarize(mean=mean(spontaneous))%>%summarize(diff(mean))
+
+rand_dist<-vector()
+for(i in 1:5000){
+  new<-data.frame(spontaneous=sample(infert$spontaneous),case=infert$case)
+  rand_dist[i]<-mean(new[new$case=="0",]$spontaneous)-mean(new[new$case=="1",]$spontaneous)
+}
+
+ggplot(infert,aes(spontaneous,fill=case))+geom_histogram()+facet_wrap(~case, ncol=2)
+
+hist(rand_dist)
+mean(rand_dist>0.5639284)*2
+```
+H0: Mean number of spontaneous abortions is the same for women with fertility issues and without.
+H1: The mean number of spontaneous abortions is different between women with fertility issues and without.
+
+The p value of the randomized t test is 0, which is significant because p<0.0031. This makes sense because if a woman naturally failed to have a pregnancy to term in the past, she is more likely to have infertility issues with future pregnancies due to underlying health problems.
+
+
+##Continuous Linear Regression
+```{R}
+infert_ce<-infert%>%mutate(induced_c=induced-mean(induced,rm.na=T),spontaneous_c=spontaneous-mean(spontaneous,rm.na=T), parity_c=parity-mean(parity,rm.na=T),age_c=age-mean(age,rm.na=T))
+
+fit<-lm(parity_c~spontaneous_c*age_c, data=infert_ce)
+summary(fit)
+
+ggplot(infert_ce, aes(age_c,parity_c))+geom_point(aes(color=spontaneous_c))+geom_smooth(method="lm")
+
+#Testing for linearity, normality, homoskedsaticity
+library(lmtest)
+resids<-fit$residuals
+fitvals<-fit$fitted.values
+ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, color='red')
+bptest(fit)
+ggplot()+geom_histogram(aes(resids), bins=20)
+shapiro.test(resids)
+
+#Recompute regression
+??vcovHC
+library(sandwich)
+coeftest(fit,vcov=vcovHC(fit))
+
+(sum((infert$parity-mean(infert$parity))^2)-sum(fit$residuals^2))/sum((infert$parity-mean(infert$parity))^2)
+
+fit2<-lm(parity_c~spontaneous_c+age_c, data=infert_ce)
+summary(fit2)
+anova(fit,fit2,test="LRT")
+```
+The coefficient for spontaneous abortions is the difference between the predicted values of parity when age=0. So, as parity increases, the number of spontaneous abortions increases slightly by 0.54109 when holding all other variables constant. Similarly, as parity increases, age increases slightly by 0.02861. The interaction of age and spontaneous abortions increases slightly with parity as well by 0.03644. 
+
+Based on the assumptions test for the regression, the data is not normally distributed and is homoscedastic. 
+
+Comparing the original regression standard errors to the robust standard errors, the error is slightly lower for the robust standard errors but not much different from the original regression. The spontaneous abortion and age significantly interact with the parity number in both the new and old linear regression.
+
+The proportion of variance in parity that is explained by the overall model is 0.1206122.
+
+The likelihood ratio test for the regression without interactions compared to the interaction model is not significant, so the interaction model is better at predicting the number of kids a woman will have.
+
+##Bootstrapped SEs
+```{R}
+boot_dat<-replicate(5000,{
+  boot_dat<-infert_ce[sample(nrow(infert_ce),replace=TRUE),]
+  fit<-lm(parity_c~spontaneous_c*age_c, data=boot_dat)
+  coef(fit)
+})
+
+boot_dat%>%t%>%as.data.frame()%>%summarize_all(sd)
+```
+The bootstrapped standard errors are about the same as the initial regression model with interaction.
+
+##Binary Logistic Regression
+```{R}
+fit3<-glm(case~spontaneous+induced, data=infert, family = binomial(link="logit"))
+infert$prob<-predict(fit3,type="response")
+summary(fit3)
+
+table(predicted=as.numeric(infert$prob>.5),true=infert$case)%>%addmargins()
+#accuracy, sensitivity, specificity, recall
+(28+149)/248
+28/83
+149/165
+28/44
+
+#Graph
+logistic<-function(x){exp(x)/(1+exp(x))}
+infert_l<-infert%>%mutate(logistic(spontaneous))
+ggplot(data=infert)+geom_line(aes(x=case,y=logistic(spontaneous)))
+
+#ROC
+library(plotROC)
+ROCplot<-ggplot(infert)+geom_roc(aes(d=case,m=prob),n.cuts=0)
+ROCplot
+calc_auc(ROCplot)
+
+#10-fold CV
+library(MASS)
+class_diag<-function(probs,truth){
+ tab<-table(factor(probs>.5,levels=c("FALSE","TRUE")),truth)
+ acc=sum(diag(tab))/sum(tab)
+ sens=tab[2,2]/colSums(tab)[2]
+ spec=tab[1,1]/colSums(tab)[1]
+ ppv=tab[2,2]/rowSums(tab)[2]
+ if(is.numeric(truth)==FALSE & is.logical(truth)==FALSE) truth<-as.numeric(truth)-1
+ #CALCULATE EXACT AUC
+ ord<-order(probs, decreasing=TRUE)
+ probs <- probs[ord]; truth <- truth[ord]
+ TPR=cumsum(truth)/max(1,sum(truth))
+ FPR=cumsum(!truth)/max(1,sum(!truth))
+ dup<-c(probs[-1]>=probs[-length(probs)], FALSE)
+ TPR<-c(0,TPR[!dup],1); FPR<-c(0,FPR[!dup],1)
+ n <- length(TPR)
+ auc<- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+ data.frame(acc,sens,spec,ppv,auc)
+} 
+
+set.seed(1234)
+k=10
+data<-infert[sample(nrow(infert)),]
+folds<-cut(seq(1:nrow(infert)),breaks=k,labels=F)
+diags<-NULL
+for(i in 1:k){
+  train<-data[folds!=i,]
+  test<-data[folds==i,]
+  truth<-test$case
+  fit3<-glm(case~spontaneous+induced, data=infert, family = "binomial")
+  probs<-predict(fit3,newdata=test,type="response")
+  diags<-rbind(diags,class_diag(probs,truth))
+}
+apply(diags,2,mean)
+```
+Controlling for induced abortions, there is a significant difference between the number of spontaneous abortions and fertility. Similarly, there is a significant difference between the number of induced abortions and fertility when controlling for spontaneous abortions.
+
+Looking at the confusion matrix, the accuracy of prediction is 0.713. The sensitivity is 0.337 and the specificity is 0.903. The recall is 0.636.
+
+The AUC calculated from the ROC plot is 0.7285506 meaning that, which means the model is an ok predictor of whether a woman will have infertility issues.
+
+Calculating the 10-fold CV, the AUC is 0.735, which is slightly better than the AUC from the ROC plot but ultimately the same. The average out of sample accuracy is 0.714, the sensitivity is 0.328 and the recall is 0.651. 
+
+##LASSO
+```{R}
+library(glmnet)
+y<-as.matrix(infert$case)
+x<-infert%>%select_if(is.numeric)%>%dplyr::select(-case,-prob)%>%mutate_all(scale)%>%as.matrix
+cv<-cv.glmnet(x,y)
+lasso1<-glmnet(x,y,lambda=cv$lambda.1se)
+coef(lasso1)
+
+set.seed(1234)
+k=10
+data<-infert[sample(nrow(infert)),]
+folds<-cut(seq(1:nrow(infert)),breaks=k,labels=F)
+diags<-NULL
+for(i in 1:k){
+  train<-data[folds!=i,]
+  test<-data[folds==i,]
+  truth<-test$case
+  fit4<-glm(case~spontaneous+parity, data=infert, family = "binomial")
+  probs<-predict(fit4,newdata=test,type="response")
+  diags<-rbind(diags,class_diag(probs,truth))
+}
+diags%>%summarize_all(mean)
+```
+Parity and spontaneous abortions are the most important predictors if infertility. The 10-fold CV for parity and spontaneous shows the AUC is 0.695. However, the accuracy is slightly improved at 0.746. This model is a slightly better predictor of infertility than the model of induced and spontaneous abortions, but ultimately both are very similar.
+

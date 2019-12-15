@@ -1,0 +1,42 @@
+baseurl = "https://example.com/"
+languageCode = "en-US"
+title = "Audrey Malcolm"
+# Enable comments by entering your Disqus shortname
+disqusShortname = ""
+# Enable Google Analytics by entering your tracking code
+googleAnalytics = ""
+theme = "hugo-sustain"
+
+[permalinks]
+  post = "/:year/:month/:day/:slug"
+
+[params]
+  avatar = "me.jpg"
+  author = "Audrey Malcolm"
+  description = "Personal resume and about me"
+
+  # Custom assets can be linked with their paths relative to static/
+  custom_css = []
+  custom_js  = []
+
+[params.social]
+  Github        = "audreymalcolm"
+  Email         = "audrey.e.malcolm@gmail.com"
+  LinkedIn      = "audrey-malcolm"
+
+## Main Menu
+[[menu.main]]
+  name = "blog"
+  weight = 100
+  identifier = "blog"
+  url = "/blog/"
+[[menu.main]]
+  name = "projects"
+  identifier = "projects"
+  weight = 200
+  url = "/projects/"
+[[menu.main]]
+  name = "resume"
+  identifier = "resume"
+  weight = 300
+  url = "/resume/"
