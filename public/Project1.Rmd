@@ -1,0 +1,159 @@
+---
+title: "Project 1"
+output:
+  html_document: default
+  pdf_document: default
+---
+#Project 1
+###Audrey Malcolm
+###aem3886
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(readxl)
+Co2 <- read_excel("Co2.xls")
+methane <- read_excel("methane.xls")
+total_greenhouse <- read_excel("total greenhouse.xls")
+robbery <- read_excel("robbery.xlsx")
+serious_assault <- read_excel("serious_assault.xlsx")
+```
+
+## Chosen Datasets
+
+  The first three datasets includes the anuual emissions of methane CO2, and total greenhouse gasses from various countries since the 1960s.The datasets are from the World Bank's statistics. CO2 emissions are recorded in kilotons (kt). Moreover, methane emissions are recorded as kts of a CO2 equivalent. This variable takes into account the warming potential of the greenhouse gasses in order to scale for each gas's contribution to global warming. Because one methane atom releases 25 times more heat than a CO2 atom, kts of a CO2 equivalent is the methane emissions in kts times 25. The total greenhouse gas emissions for each country was also measured in kts of CO2 equivalent. The fourth and fifth datasets include the annual number and rate of serious assaults and robberies in various countries since 2003. The crime data was sourced from the United Nations statistics
+  The datasets were chosen to give insigt to how global warming may affect psychology of populations, especially in regard to violent crimes. I expect there to be some correlation between crimes and emissions, but I can't for sure say the emissions are what cause the increase in crimes. It is more likely a number of factors that influence the amount of violent crime in a region including income, education, and mental health resources.
+
+
+Datasets:
+https://data.worldbank.org/indicator/EN.ATM.CO2E.KT
+https://data.worldbank.org/indicator/EN.ATM.CO2E.KT
+https://data.worldbank.org/indicator/EN.ATM.GHGT.KT.CE
+https://dataunodc.un.org/crime/serious_assault
+https://dataunodc.un.org/crime/robbery
+
+
+## Tidy Data into 'Emissions' and 'Crime'
+  The datasets were tidied using a variety of functions in order to place year and emissions in their own column. Then, the CO2, methane, and total emissions data were joined into one dataset called 'Emissions' using a left join so the country name, region, and year variables remained common in the new dataset. The robbery and assault data were already tidy, so they were simply joined into one dataset called 'crime.' 
+  
+```{r}
+
+library(tidyverse)
+library(readr)
+
+robbery<-robbery%>%select(-7)
+robbery[, -c(1:3)] <- sapply(robbery[, -c(1:3)], as.numeric)
+crime<-left_join(robbery, serious_assault, by=c("Year","Country","Sub Region", "Region"))
+head(crime)
+
+Co2[, -c(1:4)] <- sapply(Co2[, -c(1:4)], as.numeric)
+Co2<-Co2%>%pivot_longer(cols=-c(1:4), names_to = "Year", values_to = "CO2_Emissions")%>%select(-c(3:4))
+
+methane[, -c(1:4)] <- sapply(methane[, -c(1:4)], as.numeric)
+methane<-methane%>%pivot_longer(cols = -c(1:4), names_to = "Year", values_to = "Methane_Emissions")%>%select(-c(3:4))
+
+total_greenhouse[, -c(1:4)] <- sapply(total_greenhouse[, -c(1:4)], as.numeric)
+total_greenhouse<-total_greenhouse%>%pivot_longer(cols = -c(1:4), names_to = "Year", values_to = "Total_Emissions")%>%select(-c(3:4))
+
+Emissions<-Co2%>%left_join(methane, by=c("Country Code", "Year", "Country Name"))
+Emissions<-Emissions%>%left_join(total_greenhouse, by=c("Country Code", "Year","Country Name"))
+head(Emissions)
+
+```
+
+## Joining the Datasets into 'Join'
+
+  The crime and the emissions datasets were joined using a left join because there are several common variables shared throughout the datasets including year and country name. NA values were ommited so that only countries with both crime data and emissions data were considered in the following analysis. Moreover, reduntant values were removed including robbery rate and assault rate because they represented the same statistics as the robbery and assault count. Similarly, country code was removed because it is the same value as country name. 
+  As a result of the removal of NAs, 1,482 cases were reduced to 716. Moreover, many countries were excluded from the analysis because they either didn't have emissions data or crime data for that given year. Some of these countries like the United States and China might have been interesting cases to analyze, but won't be considered because they didn't have overlap in the datasets. This also means that of the data analyzed, the country with the highest emissions might not be the actual highest emissions, but rather highest emissions that also had crime data available. 
+
+```{r message=FALSE, warning=FALSE, results='hide'}
+
+Emissions[, -c(1:2)] <- sapply(Emissions[,-c(1:2)], as.numeric)
+crime[, -c(1:3)] <- sapply(crime[,-c(1:3)], as.numeric)
+
+join<-crime%>%left_join(Emissions, by=c("Year","Country"="Country Name"))%>%na.omit%>%select(-6,-8,-9)
+
+```
+
+
+##Summary Statistics
+
+  Looking at the summary of the numeric data, the robbery count and the assault count range are large, which makes sense when looking at the entire world. All the emissions statistics appear to be heavily right skewed, which indicates most countries are not producing a significant ammount of the world's greenhouse gasses. Rather, a few countries are producing most of the world's greenhouse gasses. The countries with the highest average greenhouse gas emissions are Russia, India, Brazil, and Japan. 
+    Similarly, there appears to be a significant right skew in the crime data, so a few countries have high rates of robberies and assaults while the other countries have similar levels of crime. The countries with the highest average crime rates were Brazil and Mexico.
+    
+```{R}
+join%>%select_if(is.numeric)%>%summary()
+
+join%>%group_by(Country)%>%summarize(mean_Emissions=mean(Total_Emissions),sd(Total_Emissions))%>%arrange(desc(mean_Emissions))
+
+join%>%group_by(Country)%>%mutate(crime=Robbery_Count+Assault_Count)%>%summarize(mean=mean(crime),sd(crime),n(), var(crime), median(crime), mode(crime), min(crime), max(crime), range=max(crime)-min(crime), cor(crime,Total_Emissions))%>%arrange(desc(mean))
+
+```
+
+  As for how a country's emissions and crime rates are related, the correlation matrix shows a high correlation of 0.7 between the number of robberies and the number of assaults. This indicates that within countries, crime seems to increase together. There is also a correlation between the total emissions and the number of assaults with 0.63. The correlation between total emissions and robberies of 0.5.
+  Looking at the countries with the highest total greenhouse gases released, Brazil, Germany and India have the highest rates of crimes. This supports the correlation of these variables based on the fact these countries were among the highest in average crime and emissions.
+
+```{R}
+cor<-join_nums<-join%>%select_if(is.numeric)%>%scale()%>%cov
+
+join%>%filter(Total_Emissions>15000)%>%arrange(desc(Assault_Count), desc(Robbery_Count))
+
+join%>%select_if(is.numeric)%>%cor%>%as.data.frame%>%  rownames_to_column%>%pivot_longer(-1)%>%  ggplot(aes(rowname,name,fill=value))+geom_tile()+  geom_text(aes(label=round(value,2)))+  xlab("")+ylab("") +scale_fill_gradient2(low="black", high = "red") + theme(axis.text.x=element_text(angle=90))+ggtitle("Correlation Heat Map")
+
+```
+ 
+ 
+
+## Visualizations
+  A summary graph of average emissions by region was created to demonstrate where in the world the most emissions are. Asia has the highest overall emissions while Europe, the Americas, and Oceania have about the same emissions. Africa has the lowest average emissions. The amount of emissions
+  A new variable called crime was created as an indicator of a country's overall crime. Crime was the sum of the number of assaults and number of roberies per country. The new crime variable was graphed against the total number of emissions. Most of the points appeared to  cluster near 0 in a somewhat linear pattern with some outliers that were either high crime and low emissions, or high emissions and low crime. However, the overall trend appears to be positively correlated.   
+```{R}
+library(ggplot2)
+
+join%>%ggplot(aes(Region, Total_Emissions))+geom_bar(stat="summary", fill="orangered")+labs(title="Emissions by Region", y="Average Total Emissions")+theme_classic()
+
+join2<-join%>%mutate(crime=Robbery_Count+Assault_Count)
+
+ggplot(join2)+geom_point(aes(Total_Emissions, crime), color='orangered')+coord_fixed()+labs(title="Crimes by Emission Level", x="Total Emissions", y="Total Crimes")+theme_minimal()+scale_x_continuous(breaks = round(seq(min(join2$Total_Emissions), max(join2$Total_Emissions), by = 1000000),1)) +scale_y_continuous(breaks = round(seq(min(join2$crime), max(join2$crime), by = 500000),1))
+
+
+```
+
+
+##PCs
+
+  After creating a graph for the proportion of variance explained by each principle component, I decided to keep two principal components for the analysis because that seems to be where the elbow is in the graph. PC1 and PC2 are also the only two components with eigenvalues greater than 1. 
+  
+```{R}
+nums<-join2%>%select_if(is.numeric)%>%scale
+rownames(nums)<-join2$Total_Emissions
+pca<-princomp(nums)
+summary(pca, loadings=T)
+
+eigval<-pca$sdev^2
+eigval
+
+varprop=round(eigval/sum(eigval),2)
+ggplot()+geom_bar(aes(y=varprop,x=1:7),stat="identity")+xlab("")+geom_path(aes(y=varprop,x=1:7))+  geom_text(aes(x=1:7,y=varprop,label=round(varprop,2)),vjust=1,col="white",size=5)+  scale_y_continuous(breaks=seq(0,.6,.2),labels = scales::percent)+  scale_x_continuous(breaks=1:10)+theme_classic()+labs(y="Proportion of Variance", x="Principle Component Number", title="Proportion of Variance")
+```
+ 
+ From the summary of PCAs, it is shown that PC1 explains the variation between total emissions, methan emissions, robberies, and assaults. It seems as the total emissions increases, so does the number of crimes. PC2 explains how emissions change over time. The emissions of methane have increased over time, but the emissions of CO2 have decreased.
+ 
+  
+```{R}
+
+eig<-join2%>%select(Total_Emissions,crime)%>%cor%>%eigen
+xy<-join2%>%select(crime, Total_Emissions)%>%as.matrix
+scores<--t(t(eig$vectors)%*%t(xy))%>%as.data.frame()
+ggplot(scores, aes(V1,V2))+geom_point()+xlab("PC1")+ylab("PC2") + theme_classic()
+
+pca$loadings[1:7,1:2]%>%as.data.frame%>%rownames_to_column%>%ggplot()+geom_hline(aes(yintercept=0),lty=2)+  geom_vline(aes(xintercept=0),lty=2)+ylab("PC2")+xlab("PC1")+  geom_segment(aes(x=0,y=0,xend=Comp.1,yend=Comp.2),arrow=arrow(),col="red")+  geom_label(aes(x=Comp.1*1.1,y=Comp.2*1.1,label=rowname))+ggtitle("Plot of Loadings")+theme_classic()
+
+Country<-join2$Country
+pca$scores%>%as.data.frame%>%cbind(Country,.)%>%top_n(15,Comp.1)
+pca$scores%>%as.data.frame%>%cbind(Country,.)%>%top_n(3,Comp.2)
+
+
+```
+  A plot of loadings graph was generated that showed crime, methane emissions, and total emissions were highly correlated and contributing to PC1. CO2 emissions and year were not correlated with the other factors and contributed more to PC2. The reason CO2 emissions are highly correlated with crime may be because countries that produce a high amount of CO2 are generally more developed nations with economies involved in manufacturing. Wealth can contribute to decreased crimes, so CO2 emissions may be indicative of the countries overall wealth. Methane is a greenhouse gas generally produced in agriculture, which is a more important contributor to the economy in less developed nations. As such, PC1 can be considered the relative wealth axis, while PC2 is the emissions over time axis. 
+  The largest contributing countries to PC1 are Mexico, Brazil, and India. The countries contributing the most to PC2 are Burundi, Rwanda, and Uganda
+  

@@ -1,0 +1,42 @@
+---
+title: Needleman-Wunsch
+author: Audrey Malcolm
+date: '2019-12-15'
+slug: Needleman-Wunsch
+categories: []
+tags: []
+description: ''
+---
+
+
+
+<p>#How to use Needleman Wunsch to Align DNA Sequences</p>
+<p>#By Hand</p>
+<p>Lets say you want to align the sequences CCAGT and ACAAGT using a match score of 2, mismatch score of -1 and a gap score of -1. You would first begin aligning the sequences by making a 6 x 7 grid including a gap column/row in front of each of the sequences. From there, you move horizontally and vertically accross the chart adding and subtracting the appropriate value for a match (+2), mismatch(-1), or gap(-1) in the sequence. Keep the value that is the lowerst possible for each cell in the table. For instance, starting from 0 in the upper right corner, each movement is a gap or a mismatch, so you subtract 1 from 0.</p>
+<p>See the completed chart below:
+<img src="/blog/2019-12-15-python-basics_files/HW12.jpeg" /></p>
+<p>From there, you can backtrace from the largest bottom right cell to the upper left cell following the highest numbers to lowest. The backtrace in this case should sum to 6 with the aligned sequences “ACAAGT” and “-CCAGT”.</p>
+<p>#In Python
+A much easier method of aligning the sequence is making a formula in python that should return the same matrix as above:</p>
+<p>s1=“ACAAGT”
+s2=“CCAGT”</p>
+<p>def match_fun(a,b): # Helper function to define match/mismatch scores<br />
+if a==b:<br />
+score=1<br />
+else:<br />
+score=-1<br />
+return score</p>
+<p>def needleman(seq1,seq2,gap_penalty=-1, match_score=2, mismatch_score=-1):<br />
+m=len(seq1)<br />
+n=len(seq2)<br />
+score=np.empty(shape=[n+1,m+1])<br />
+for j in range(0, m + 1): score[0][j] = gap_penalty * j<br />
+for i in range(0, n + 1): score[i][0] = gap_penalty * i<br />
+for i in range(1, n + 1):<br />
+for j in range(1, m + 1):<br />
+insert = score[i - 1][j] + gap_penalty<br />
+delete = score[i][j - 1] + gap_penalty<br />
+match = score[i - 1][j - 1]+match_fun(seq1[j-1],-seq2[i-1])<br />
+score[i][j] = max(match, delete, insert)
+return score</p>
+<p>needleman(sq,s2)</p>

@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Audrey Malcolm" />
+    <meta name="description" content="Personal resume and blog">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+    <title>Project 2</title>
+    <meta name="generator" content="Hugo 0.61.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="/blog/">BLOG</a></li>
+        
+        <li><a href="/projects/">PROJECTS</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="/project2/">Project 2</a></strong>
+          </h3>
+        </div>
+        <div class="blog-title">
+          <h4>
+          January 1, 0001
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<p>##Audrey Malcolm aem3886</p>
+<p>##Introduction</p>
+<pre class="r"><code>data(package=.packages(all.available=TRUE))</code></pre>
+<pre><code>## Warning in data(package = .packages(all.available = TRUE)): datasets have
+## been moved from package &#39;base&#39; to package &#39;datasets&#39;</code></pre>
+<pre><code>## Warning in data(package = .packages(all.available = TRUE)): datasets have
+## been moved from package &#39;stats&#39; to package &#39;datasets&#39;</code></pre>
+<pre class="r"><code>library(datasets)
+library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages ----------------------- tidyverse 1.2.1 --</code></pre>
+<pre><code>## v ggplot2 3.2.1     v purrr   0.3.2
+## v tibble  2.1.3     v dplyr   0.8.3
+## v tidyr   1.0.0     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.4.0</code></pre>
+<pre><code>## -- Conflicts -------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>infert&lt;-as.data.frame(infert)
+?infert</code></pre>
+<pre><code>## starting httpd help server ...</code></pre>
+<pre><code>##  done</code></pre>
+<p>The infertility dataset looks at infertility rates in women after having a spontaneous or an induced abortion as compared to a control group of women. The dataset looks at other factors like a woman’s education, age, number of prior pregnancies, and number of prior abortions. Parity is the number of pregnancies that have been brought to gestation age and is the fertility measure. Women in case 1 were experiencing infertility issues while women in case 0 were not experiencing infertility issues.</p>
+<p>##Manova, Anova, T Tests</p>
+<pre class="r"><code>man1&lt;-manova(cbind(spontaneous,induced,age, parity)~case, data=infert)
+summary(man1)</code></pre>
+<pre><code>##            Df  Pillai approx F num Df den Df    Pr(&gt;F)    
+## case        1 0.20608   15.769      4    243 1.732e-11 ***
+## Residuals 246                                             
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>summary.aov(man1)</code></pre>
+<pre><code>##  Response spontaneous :
+##              Df  Sum Sq Mean Sq F value   Pr(&gt;F)    
+## case          1  17.561 17.5614  37.572 3.48e-09 ***
+## Residuals   246 114.983  0.4674                     
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+##  Response induced :
+##              Df  Sum Sq Mean Sq F value Pr(&gt;F)
+## case          1   0.039 0.03944  0.0721 0.7886
+## Residuals   246 134.654 0.54737               
+## 
+##  Response age :
+##              Df Sum Sq Mean Sq F value Pr(&gt;F)
+## case          1    0.1  0.0849  0.0031 0.9559
+## Residuals   246 6811.9 27.6907               
+## 
+##  Response parity :
+##              Df Sum Sq Mean Sq F value Pr(&gt;F)
+## case          1   0.03 0.03072  0.0195  0.889
+## Residuals   246 386.84 1.57250</code></pre>
+<pre class="r"><code>pairwise.t.test(infert$case, infert$spontaneous, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  infert$case and infert$spontaneous 
+## 
+##   0       1      
+## 1 0.00027 -      
+## 2 4e-08   0.01162
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>.05/16</code></pre>
+<pre><code>## [1] 0.003125</code></pre>
+<p>A MANOVA test was conducted in order to test the effect of infertility on number of spontaneous and induced abortions, parity, and age of the women. Because the infertility p value is significant, the null hypothesis is rejected. So, for at least one dependent variable (spontaneous abortions, induced abortions, parity, and age), the infertility mean is significantly different with p&lt;1.353e-08.
+From there, the ANOVA test for each dependent variable was conducted. The p value for spontaneous abortions is significant with p=3.48e-09. However, the mean age, parity, and induced abortions across parity were not significant. Therefore, for spontaneous abortions, at least of mean differs, but for parity, age and, induced abortions, the mean does not vary across case.
+If unadjusted, the probability of a type 1 error is 0.05. The Bonferroni method was used to control Type 1 error rates. Because 1 manova, 3 anovas, and (4x3)=12 t tests were conducted, the adjusted p value is 0.05/16 = 0.0031. Still, with the adjusted p value, the manova and anova for induced and spontaneous abortions are still significant and the previous analyses stand.
+In order to determine which groups within the number of induced and spontaneous abortions were different, a pairwise t test was conducted. It shows that women with 1 or spontaneous abortion face infertility issues in their second pregnancy.</p>
+<p>##Randomization Test &lt;- make graph for null statistic</p>
+<pre class="r"><code>infert%&gt;%group_by(case)%&gt;%summarize(mean=mean(spontaneous))%&gt;%summarize(diff(mean))</code></pre>
+<pre><code>## # A tibble: 1 x 1
+##   `diff(mean)`
+##          &lt;dbl&gt;
+## 1        0.564</code></pre>
+<pre class="r"><code>rand_dist&lt;-vector()
+for(i in 1:5000){
+  new&lt;-data.frame(spontaneous=sample(infert$spontaneous),case=infert$case)
+  rand_dist[i]&lt;-mean(new[new$case==&quot;0&quot;,]$spontaneous)-mean(new[new$case==&quot;1&quot;,]$spontaneous)
+}
+
+ggplot(infert,aes(spontaneous,fill=case))+geom_histogram()+facet_wrap(~case, ncol=2)</code></pre>
+<pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>hist(rand_dist)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
+<pre class="r"><code>mean(rand_dist&gt;0.5639284)*2</code></pre>
+<pre><code>## [1] 0</code></pre>
+<p>H0: Mean number of spontaneous abortions is the same for women with fertility issues and without.
+H1: The mean number of spontaneous abortions is different between women with fertility issues and without.</p>
+<p>The p value of the randomized t test is 0, which is significant because p&lt;0.0031. This makes sense because if a woman naturally failed to have a pregnancy to term in the past, she is more likely to have infertility issues with future pregnancies due to underlying health problems.</p>
+<p>##Continuous Linear Regression</p>
+<pre class="r"><code>infert_ce&lt;-infert%&gt;%mutate(induced_c=induced-mean(induced,rm.na=T),spontaneous_c=spontaneous-mean(spontaneous,rm.na=T), parity_c=parity-mean(parity,rm.na=T),age_c=age-mean(age,rm.na=T))
+
+fit&lt;-lm(parity_c~spontaneous_c*age_c, data=infert_ce)
+summary(fit)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = parity_c ~ spontaneous_c * age_c, data = infert_ce)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.8839 -0.8191 -0.3114  0.2493  4.2493 
+## 
+## Coefficients:
+##                     Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)          0.01177    0.07528   0.156   0.8759    
+## spontaneous_c        0.54109    0.10304   5.251 3.29e-07 ***
+## age_c                0.02861    0.01442   1.984   0.0484 *  
+## spontaneous_c:age_c  0.03644    0.02082   1.750   0.0814 .  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.181 on 244 degrees of freedom
+## Multiple R-squared:  0.1206, Adjusted R-squared:  0.1098 
+## F-statistic: 11.16 on 3 and 244 DF,  p-value: 6.919e-07</code></pre>
+<pre class="r"><code>ggplot(infert_ce, aes(age_c,parity_c))+geom_point(aes(color=spontaneous_c))+geom_smooth(method=&quot;lm&quot;)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>#Testing for linearity, normality, homoskedsaticity
+library(lmtest)</code></pre>
+<pre><code>## Loading required package: zoo</code></pre>
+<pre><code>## 
+## Attaching package: &#39;zoo&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     as.Date, as.Date.numeric</code></pre>
+<pre class="r"><code>resids&lt;-fit$residuals
+fitvals&lt;-fit$fitted.values
+ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, color=&#39;red&#39;)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
+<pre class="r"><code>bptest(fit)</code></pre>
+<pre><code>## 
+##  studentized Breusch-Pagan test
+## 
+## data:  fit
+## BP = 3.3784, df = 3, p-value = 0.3369</code></pre>
+<pre class="r"><code>ggplot()+geom_histogram(aes(resids), bins=20)</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-4-3.png" width="672" /></p>
+<pre class="r"><code>shapiro.test(resids)</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  resids
+## W = 0.88128, p-value = 5.306e-13</code></pre>
+<pre class="r"><code>#Recompute regression
+??vcovHC
+library(sandwich)
+coeftest(fit,vcov=vcovHC(fit))</code></pre>
+<pre><code>## 
+## t test of coefficients:
+## 
+##                     Estimate Std. Error t value  Pr(&gt;|t|)    
+## (Intercept)         0.011765   0.076635  0.1535   0.87811    
+## spontaneous_c       0.541088   0.109452  4.9436 1.427e-06 ***
+## age_c               0.028614   0.016015  1.7867   0.07523 .  
+## spontaneous_c:age_c 0.036437   0.024466  1.4893   0.13771    
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<pre class="r"><code>(sum((infert$parity-mean(infert$parity))^2)-sum(fit$residuals^2))/sum((infert$parity-mean(infert$parity))^2)</code></pre>
+<pre><code>## [1] 0.1206122</code></pre>
+<pre class="r"><code>fit2&lt;-lm(parity_c~spontaneous_c+age_c, data=infert_ce)
+summary(fit2)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = parity_c ~ spontaneous_c + age_c, data = infert_ce)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -1.6527 -0.8674 -0.2336  0.3486  4.3683 
+## 
+## Coefficients:
+##                Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)   3.343e-15  7.530e-02   0.000   1.0000    
+## spontaneous_c 5.495e-01  1.034e-01   5.316 2.38e-07 ***
+## age_c         2.619e-02  1.442e-02   1.817   0.0705 .  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 1.186 on 245 degrees of freedom
+## Multiple R-squared:  0.1096, Adjusted R-squared:  0.1023 
+## F-statistic: 15.08 on 2 and 245 DF,  p-value: 6.692e-07</code></pre>
+<pre class="r"><code>anova(fit,fit2,test=&quot;LRT&quot;)</code></pre>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: parity_c ~ spontaneous_c * age_c
+## Model 2: parity_c ~ spontaneous_c + age_c
+##   Res.Df    RSS Df Sum of Sq Pr(&gt;Chi)  
+## 1    244 340.21                        
+## 2    245 344.48 -1   -4.2691  0.08015 .
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>The coefficient for spontaneous abortions is the difference between the predicted values of parity when age=0. So, as parity increases, the number of spontaneous abortions increases slightly by 0.54109 when holding all other variables constant. Similarly, as parity increases, age increases slightly by 0.02861. The interaction of age and spontaneous abortions increases slightly with parity as well by 0.03644.</p>
+<p>Based on the assumptions test for the regression, the data is not normally distributed and is homoscedastic.</p>
+<p>Comparing the original regression standard errors to the robust standard errors, the error is slightly lower for the robust standard errors but not much different from the original regression. The spontaneous abortion and age significantly interact with the parity number in both the new and old linear regression.</p>
+<p>The proportion of variance in parity that is explained by the overall model is 0.1206122.</p>
+<p>The likelihood ratio test for the regression without interactions compared to the interaction model is not significant, so the interaction model is better at predicting the number of kids a woman will have.</p>
+<p>##Bootstrapped SEs</p>
+<pre class="r"><code>boot_dat&lt;-replicate(5000,{
+  boot_dat&lt;-infert_ce[sample(nrow(infert_ce),replace=TRUE),]
+  fit&lt;-lm(parity_c~spontaneous_c*age_c, data=boot_dat)
+  coef(fit)
+})
+
+boot_dat%&gt;%t%&gt;%as.data.frame()%&gt;%summarize_all(sd)</code></pre>
+<pre><code>##   (Intercept) spontaneous_c      age_c spontaneous_c:age_c
+## 1  0.07498601     0.1076324 0.01584306          0.02383459</code></pre>
+<p>The bootstrapped standard errors are about the same as the initial regression model with interaction.</p>
+<p>##Binary Logistic Regression</p>
+<pre class="r"><code>fit3&lt;-glm(case~spontaneous+induced, data=infert, family = binomial(link=&quot;logit&quot;))
+infert$prob&lt;-predict(fit3,type=&quot;response&quot;)
+summary(fit3)</code></pre>
+<pre><code>## 
+## Call:
+## glm(formula = case ~ spontaneous + induced, family = binomial(link = &quot;logit&quot;), 
+##     data = infert)
+## 
+## Deviance Residuals: 
+##     Min       1Q   Median       3Q      Max  
+## -1.6678  -0.8360  -0.5772   0.9030   1.9362  
+## 
+## Coefficients:
+##             Estimate Std. Error z value Pr(&gt;|z|)    
+## (Intercept)  -1.7079     0.2677  -6.380 1.78e-10 ***
+## spontaneous   1.1972     0.2116   5.657 1.54e-08 ***
+## induced       0.4181     0.2056   2.033    0.042 *  
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## (Dispersion parameter for binomial family taken to be 1)
+## 
+##     Null deviance: 316.17  on 247  degrees of freedom
+## Residual deviance: 279.61  on 245  degrees of freedom
+## AIC: 285.61
+## 
+## Number of Fisher Scoring iterations: 4</code></pre>
+<pre class="r"><code>table(predicted=as.numeric(infert$prob&gt;.5),true=infert$case)%&gt;%addmargins()</code></pre>
+<pre><code>##          true
+## predicted   0   1 Sum
+##       0   149  55 204
+##       1    16  28  44
+##       Sum 165  83 248</code></pre>
+<pre class="r"><code>#accuracy, sensitivity, specificity, recall
+(28+149)/248</code></pre>
+<pre><code>## [1] 0.7137097</code></pre>
+<pre class="r"><code>28/83</code></pre>
+<pre><code>## [1] 0.3373494</code></pre>
+<pre class="r"><code>149/165</code></pre>
+<pre><code>## [1] 0.9030303</code></pre>
+<pre class="r"><code>28/44</code></pre>
+<pre><code>## [1] 0.6363636</code></pre>
+<pre class="r"><code>#Graph
+logistic&lt;-function(x){exp(x)/(1+exp(x))}
+infert_l&lt;-infert%&gt;%mutate(logistic(spontaneous))
+ggplot(data=infert)+geom_line(aes(x=case,y=logistic(spontaneous)))</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>#ROC
+library(plotROC)
+ROCplot&lt;-ggplot(infert)+geom_roc(aes(d=case,m=prob),n.cuts=0)
+ROCplot</code></pre>
+<p><img src="/Project2_files/figure-html/unnamed-chunk-6-2.png" width="672" /></p>
+<pre class="r"><code>calc_auc(ROCplot)</code></pre>
+<pre><code>##   PANEL group       AUC
+## 1     1    -1 0.7285506</code></pre>
+<pre class="r"><code>#10-fold CV
+library(MASS)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;MASS&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     select</code></pre>
+<pre class="r"><code>class_diag&lt;-function(probs,truth){
+ tab&lt;-table(factor(probs&gt;.5,levels=c(&quot;FALSE&quot;,&quot;TRUE&quot;)),truth)
+ acc=sum(diag(tab))/sum(tab)
+ sens=tab[2,2]/colSums(tab)[2]
+ spec=tab[1,1]/colSums(tab)[1]
+ ppv=tab[2,2]/rowSums(tab)[2]
+ if(is.numeric(truth)==FALSE &amp; is.logical(truth)==FALSE) truth&lt;-as.numeric(truth)-1
+ #CALCULATE EXACT AUC
+ ord&lt;-order(probs, decreasing=TRUE)
+ probs &lt;- probs[ord]; truth &lt;- truth[ord]
+ TPR=cumsum(truth)/max(1,sum(truth))
+ FPR=cumsum(!truth)/max(1,sum(!truth))
+ dup&lt;-c(probs[-1]&gt;=probs[-length(probs)], FALSE)
+ TPR&lt;-c(0,TPR[!dup],1); FPR&lt;-c(0,FPR[!dup],1)
+ n &lt;- length(TPR)
+ auc&lt;- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+ data.frame(acc,sens,spec,ppv,auc)
+} 
+
+set.seed(1234)
+k=10
+data&lt;-infert[sample(nrow(infert)),]
+folds&lt;-cut(seq(1:nrow(infert)),breaks=k,labels=F)
+diags&lt;-NULL
+for(i in 1:k){
+  train&lt;-data[folds!=i,]
+  test&lt;-data[folds==i,]
+  truth&lt;-test$case
+  fit3&lt;-glm(case~spontaneous+induced, data=infert, family = &quot;binomial&quot;)
+  probs&lt;-predict(fit3,newdata=test,type=&quot;response&quot;)
+  diags&lt;-rbind(diags,class_diag(probs,truth))
+}
+apply(diags,2,mean)</code></pre>
+<pre><code>##       acc      sens      spec       ppv       auc 
+## 0.7140000 0.3276365 0.9034115 0.6509524 0.7354819</code></pre>
+<p>Controlling for induced abortions, there is a significant difference between the number of spontaneous abortions and fertility. Similarly, there is a significant difference between the number of induced abortions and fertility when controlling for spontaneous abortions.</p>
+<p>Looking at the confusion matrix, the accuracy of prediction is 0.713. The sensitivity is 0.337 and the specificity is 0.903. The recall is 0.636.</p>
+<p>The AUC calculated from the ROC plot is 0.7285506 meaning that, which means the model is an ok predictor of whether a woman will have infertility issues.</p>
+<p>Calculating the 10-fold CV, the AUC is 0.735, which is slightly better than the AUC from the ROC plot but ultimately the same. The average out of sample accuracy is 0.714, the sensitivity is 0.328 and the recall is 0.651.</p>
+<p>##LASSO</p>
+<pre class="r"><code>library(glmnet)</code></pre>
+<pre><code>## Loading required package: Matrix</code></pre>
+<pre><code>## 
+## Attaching package: &#39;Matrix&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:tidyr&#39;:
+## 
+##     expand, pack, unpack</code></pre>
+<pre><code>## Loaded glmnet 3.0-1</code></pre>
+<pre class="r"><code>y&lt;-as.matrix(infert$case)
+x&lt;-infert%&gt;%select_if(is.numeric)%&gt;%dplyr::select(-case,-prob)%&gt;%mutate_all(scale)%&gt;%as.matrix
+cv&lt;-cv.glmnet(x,y)
+lasso1&lt;-glmnet(x,y,lambda=cv$lambda.1se)
+coef(lasso1)</code></pre>
+<pre><code>## 7 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                         s0
+## (Intercept)     0.33467742
+## age             .         
+## parity         -0.04467257
+## induced         0.05001560
+## spontaneous     0.17504826
+## stratum         .         
+## pooled.stratum -0.01094999</code></pre>
+<pre class="r"><code>set.seed(1234)
+k=10
+data&lt;-infert[sample(nrow(infert)),]
+folds&lt;-cut(seq(1:nrow(infert)),breaks=k,labels=F)
+diags&lt;-NULL
+for(i in 1:k){
+  train&lt;-data[folds!=i,]
+  test&lt;-data[folds==i,]
+  truth&lt;-test$case
+  fit4&lt;-glm(case~spontaneous+parity, data=infert, family = &quot;binomial&quot;)
+  probs&lt;-predict(fit4,newdata=test,type=&quot;response&quot;)
+  diags&lt;-rbind(diags,class_diag(probs,truth))
+}
+diags%&gt;%summarize_all(mean)</code></pre>
+<pre><code>##     acc      sens      spec      ppv       auc
+## 1 0.746 0.5340193 0.8634247 0.659881 0.6945263</code></pre>
+<p>Parity and spontaneous abortions are the most important predictors if infertility. The 10-fold CV for parity and spontaneous shows the AUC is 0.695. However, the accuracy is slightly improved at 0.746. This model is a slightly better predictor of infertility than the model of induced and spontaneous abortions, but ultimately both are very similar.</p>
+
+              <hr>
+              <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div>
+            </div>
+          </div>
+          <hr>
+        <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+        </div>
+      </div>
+      
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="/js/docs.min.js"></script>
+<script src="/js/main.js"></script>
+
+<script src="/js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

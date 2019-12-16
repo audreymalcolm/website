@@ -1,4 +1,4 @@
-baseurl = "https://example.com/"
+baseurl = "/"
 languageCode = "en-US"
 title = "Audrey Malcolm"
 # Enable comments by entering your Disqus shortname
@@ -13,7 +13,7 @@ theme = "hugo-sustain"
 [params]
   avatar = "me.jpg"
   author = "Audrey Malcolm"
-  description = "Personal resume and about me"
+  description = "Personal resume and blog"
 
   # Custom assets can be linked with their paths relative to static/
   custom_css = []
@@ -35,8 +35,4 @@ theme = "hugo-sustain"
   identifier = "projects"
   weight = 200
   url = "/projects/"
-[[menu.main]]
-  name = "resume"
-  identifier = "resume"
-  weight = 300
-  url = "/resume/"
+

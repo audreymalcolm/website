@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Audrey Malcolm" />
+    <meta name="description" content="Personal resume and blog">
+    <link rel="shortcut icon" type="image/x-icon" href="/img/favicon.ico">
+    <title>Project 1</title>
+    <meta name="generator" content="Hugo 0.61.0" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="/"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="/blog/">BLOG</a></li>
+        
+        <li><a href="/projects/">PROJECTS</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="/project1/">Project 1</a></strong>
+          </h3>
+        </div>
+        <div class="blog-title">
+          <h4>
+          January 1, 0001
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<p>#Project 1
+###Audrey Malcolm
+###aem3886</p>
+<div id="chosen-datasets" class="section level2">
+<h2>Chosen Datasets</h2>
+<p>The first three datasets includes the anuual emissions of methane CO2, and total greenhouse gasses from various countries since the 1960s.The datasets are from the World Bank’s statistics. CO2 emissions are recorded in kilotons (kt). Moreover, methane emissions are recorded as kts of a CO2 equivalent. This variable takes into account the warming potential of the greenhouse gasses in order to scale for each gas’s contribution to global warming. Because one methane atom releases 25 times more heat than a CO2 atom, kts of a CO2 equivalent is the methane emissions in kts times 25. The total greenhouse gas emissions for each country was also measured in kts of CO2 equivalent. The fourth and fifth datasets include the annual number and rate of serious assaults and robberies in various countries since 2003. The crime data was sourced from the United Nations statistics
+The datasets were chosen to give insigt to how global warming may affect psychology of populations, especially in regard to violent crimes. I expect there to be some correlation between crimes and emissions, but I can’t for sure say the emissions are what cause the increase in crimes. It is more likely a number of factors that influence the amount of violent crime in a region including income, education, and mental health resources.</p>
+<p>Datasets:
+<a href="https://data.worldbank.org/indicator/EN.ATM.CO2E.KT" class="uri">https://data.worldbank.org/indicator/EN.ATM.CO2E.KT</a>
+<a href="https://data.worldbank.org/indicator/EN.ATM.CO2E.KT" class="uri">https://data.worldbank.org/indicator/EN.ATM.CO2E.KT</a>
+<a href="https://data.worldbank.org/indicator/EN.ATM.GHGT.KT.CE" class="uri">https://data.worldbank.org/indicator/EN.ATM.GHGT.KT.CE</a>
+<a href="https://dataunodc.un.org/crime/serious_assault" class="uri">https://dataunodc.un.org/crime/serious_assault</a>
+<a href="https://dataunodc.un.org/crime/robbery" class="uri">https://dataunodc.un.org/crime/robbery</a></p>
+</div>
+<div id="tidy-data-into-emissions-and-crime" class="section level2">
+<h2>Tidy Data into ‘Emissions’ and ‘Crime’</h2>
+<p>The datasets were tidied using a variety of functions in order to place year and emissions in their own column. Then, the CO2, methane, and total emissions data were joined into one dataset called ‘Emissions’ using a left join so the country name, region, and year variables remained common in the new dataset. The robbery and assault data were already tidy, so they were simply joined into one dataset called ‘crime.’</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## -- Attaching packages ----------------------- tidyverse 1.2.1 --</code></pre>
+<pre><code>## v ggplot2 3.2.1     v purrr   0.3.2
+## v tibble  2.1.3     v dplyr   0.8.3
+## v tidyr   1.0.0     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.4.0</code></pre>
+<pre><code>## -- Conflicts -------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(readr)
+
+robbery&lt;-robbery%&gt;%select(-7)
+robbery[, -c(1:3)] &lt;- sapply(robbery[, -c(1:3)], as.numeric)
+crime&lt;-left_join(robbery, serious_assault, by=c(&quot;Year&quot;,&quot;Country&quot;,&quot;Sub Region&quot;, &quot;Region&quot;))
+head(crime)</code></pre>
+<pre><code>## # A tibble: 6 x 8
+##   Region `Sub Region` Country  Year Robbery_Count Robbery_Rate
+##   &lt;chr&gt;  &lt;chr&gt;        &lt;chr&gt;   &lt;dbl&gt;         &lt;dbl&gt;        &lt;dbl&gt;
+## 1 Africa Eastern Afr~ Burundi  2008          4009       0.0401
+## 2 Africa Eastern Afr~ Burundi  2009          4231       0.0423
+## 3 Africa Eastern Afr~ Burundi  2010          3039       0.0304
+## 4 Africa Eastern Afr~ Burundi  2011          4266       0.0427
+## 5 Africa Eastern Afr~ Burundi  2012          4246       0.0425
+## 6 Africa Eastern Afr~ Burundi  2013          4108       0.0411
+## # ... with 2 more variables: Assault_Count &lt;dbl&gt;, Assault_Rate &lt;dbl&gt;</code></pre>
+<pre class="r"><code>Co2[, -c(1:4)] &lt;- sapply(Co2[, -c(1:4)], as.numeric)
+Co2&lt;-Co2%&gt;%pivot_longer(cols=-c(1:4), names_to = &quot;Year&quot;, values_to = &quot;CO2_Emissions&quot;)%&gt;%select(-c(3:4))
+
+methane[, -c(1:4)] &lt;- sapply(methane[, -c(1:4)], as.numeric)
+methane&lt;-methane%&gt;%pivot_longer(cols = -c(1:4), names_to = &quot;Year&quot;, values_to = &quot;Methane_Emissions&quot;)%&gt;%select(-c(3:4))
+
+total_greenhouse[, -c(1:4)] &lt;- sapply(total_greenhouse[, -c(1:4)], as.numeric)
+total_greenhouse&lt;-total_greenhouse%&gt;%pivot_longer(cols = -c(1:4), names_to = &quot;Year&quot;, values_to = &quot;Total_Emissions&quot;)%&gt;%select(-c(3:4))
+
+Emissions&lt;-Co2%&gt;%left_join(methane, by=c(&quot;Country Code&quot;, &quot;Year&quot;, &quot;Country Name&quot;))
+Emissions&lt;-Emissions%&gt;%left_join(total_greenhouse, by=c(&quot;Country Code&quot;, &quot;Year&quot;,&quot;Country Name&quot;))
+head(Emissions)</code></pre>
+<pre><code>## # A tibble: 6 x 6
+##   `Country Name` `Country Code` Year  CO2_Emissions Methane_Emissio~
+##   &lt;chr&gt;          &lt;chr&gt;          &lt;chr&gt;         &lt;dbl&gt;            &lt;dbl&gt;
+## 1 Aruba          ABW            1960             NA               NA
+## 2 Aruba          ABW            1961             NA               NA
+## 3 Aruba          ABW            1962             NA               NA
+## 4 Aruba          ABW            1963             NA               NA
+## 5 Aruba          ABW            1964             NA               NA
+## 6 Aruba          ABW            1965             NA               NA
+## # ... with 1 more variable: Total_Emissions &lt;dbl&gt;</code></pre>
+</div>
+<div id="joining-the-datasets-into-join" class="section level2">
+<h2>Joining the Datasets into ‘Join’</h2>
+<p>The crime and the emissions datasets were joined using a left join because there are several common variables shared throughout the datasets including year and country name. NA values were ommited so that only countries with both crime data and emissions data were considered in the following analysis. Moreover, reduntant values were removed including robbery rate and assault rate because they represented the same statistics as the robbery and assault count. Similarly, country code was removed because it is the same value as country name.
+As a result of the removal of NAs, 1,482 cases were reduced to 716. Moreover, many countries were excluded from the analysis because they either didn’t have emissions data or crime data for that given year. Some of these countries like the United States and China might have been interesting cases to analyze, but won’t be considered because they didn’t have overlap in the datasets. This also means that of the data analyzed, the country with the highest emissions might not be the actual highest emissions, but rather highest emissions that also had crime data available.</p>
+<pre class="r"><code>Emissions[, -c(1:2)] &lt;- sapply(Emissions[,-c(1:2)], as.numeric)
+crime[, -c(1:3)] &lt;- sapply(crime[,-c(1:3)], as.numeric)
+
+join&lt;-crime%&gt;%left_join(Emissions, by=c(&quot;Year&quot;,&quot;Country&quot;=&quot;Country Name&quot;))%&gt;%na.omit%&gt;%select(-6,-8,-9)</code></pre>
+<p>##Summary Statistics</p>
+<p>Looking at the summary of the numeric data, the robbery count and the assault count range are large, which makes sense when looking at the entire world. All the emissions statistics appear to be heavily right skewed, which indicates most countries are not producing a significant ammount of the world’s greenhouse gasses. Rather, a few countries are producing most of the world’s greenhouse gasses. The countries with the highest average greenhouse gas emissions are Russia, India, Brazil, and Japan.
+Similarly, there appears to be a significant right skew in the crime data, so a few countries have high rates of robberies and assaults while the other countries have similar levels of crime. The countries with the highest average crime rates were Brazil and Mexico.</p>
+<pre class="r"><code>join%&gt;%select_if(is.numeric)%&gt;%summary()</code></pre>
+<pre><code>##       Year      Robbery_Count       Assault_Count    CO2_Emissions     
+##  Min.   :2003   Min.   :      0.0   Min.   :     0   Min.   : 0.02271  
+##  1st Qu.:2006   1st Qu.:    939.5   1st Qu.:  1109   1st Qu.: 1.66652  
+##  Median :2008   Median :   3886.0   Median :  6197   Median : 4.63046  
+##  Mean   :2008   Mean   :  36471.9   Mean   : 37891   Mean   : 6.14900  
+##  3rd Qu.:2010   3rd Qu.:  16680.5   3rd Qu.: 32279   3rd Qu.: 8.54823  
+##  Max.   :2012   Max.   :1087059.0   Max.   :732913   Max.   :60.90081  
+##  Methane_Emissions  Total_Emissions    
+##  Min.   :    27.6   Min.   :    155.3  
+##  1st Qu.:  3898.2   1st Qu.:  23282.6  
+##  Median : 11760.9   Median :  68847.7  
+##  Mean   : 41411.5   Mean   : 240752.8  
+##  3rd Qu.: 27487.0   3rd Qu.: 152890.0  
+##  Max.   :636395.8   Max.   :3002894.9</code></pre>
+<pre class="r"><code>join%&gt;%group_by(Country)%&gt;%summarize(mean_Emissions=mean(Total_Emissions),sd(Total_Emissions))%&gt;%arrange(desc(mean_Emissions))</code></pre>
+<pre><code>## # A tibble: 109 x 3
+##    Country            mean_Emissions `sd(Total_Emissions)`
+##    &lt;chr&gt;                       &lt;dbl&gt;                 &lt;dbl&gt;
+##  1 Russian Federation       2670707.               176026.
+##  2 India                    2495458.               325338.
+##  3 Brazil                   2273444.               780553.
+##  4 Japan                    1406225.                58505.
+##  5 Germany                   975483.                30184.
+##  6 Canada                    911177.               104711.
+##  7 Indonesia                 846752.               169662.
+##  8 Australia                 776528.                12985.
+##  9 Mexico                    638916.                27548.
+## 10 France                    537658.                22672.
+## # ... with 99 more rows</code></pre>
+<pre class="r"><code>join%&gt;%group_by(Country)%&gt;%mutate(crime=Robbery_Count+Assault_Count)%&gt;%summarize(mean=mean(crime),sd(crime),n(), var(crime), median(crime), mode(crime), min(crime), max(crime), range=max(crime)-min(crime), cor(crime,Total_Emissions))%&gt;%arrange(desc(mean))</code></pre>
+<pre><code>## # A tibble: 109 x 11
+##    Country   mean `sd(crime)` `n()` `var(crime)` `median(crime)`
+##    &lt;chr&gt;    &lt;dbl&gt;       &lt;dbl&gt; &lt;int&gt;        &lt;dbl&gt;           &lt;dbl&gt;
+##  1 Brazil  1.66e6     113146.     7 12801989373.        1584544 
+##  2 Mexico  8.78e5      87792.     9  7707479372.         907809 
+##  3 Argent~ 4.99e5      23903.     4   571366230.         492881 
+##  4 Germany 4.06e5     186602.    10 34820150009.         519908 
+##  5 India   3.08e5      24965.     9   623255144.         301623 
+##  6 France  3.06e5      39003.    10  1521249679.         293060.
+##  7 Russia~ 2.77e5      99601.     9  9920305526.         289393 
+##  8 Belgium 2.20e5      81893.    10  6706532374.         264849 
+##  9 Turkey  1.76e5      60078.    10  3609350894.         167388 
+## 10 Spain   1.24e5      19565.     5   382787536.         113960 
+## # ... with 99 more rows, and 5 more variables: `mode(crime)` &lt;chr&gt;,
+## #   `min(crime)` &lt;dbl&gt;, `max(crime)` &lt;dbl&gt;, range &lt;dbl&gt;, `cor(crime,
+## #   Total_Emissions)` &lt;dbl&gt;</code></pre>
+<p>As for how a country’s emissions and crime rates are related, the correlation matrix shows a high correlation of 0.7 between the number of robberies and the number of assaults. This indicates that within countries, crime seems to increase together. There is also a correlation between the total emissions and the number of assaults with 0.63. The correlation between total emissions and robberies of 0.5.
+Looking at the countries with the highest total greenhouse gases released, Brazil, Germany and India have the highest rates of crimes. This supports the correlation of these variables based on the fact these countries were among the highest in average crime and emissions.</p>
+<pre class="r"><code>cor&lt;-join_nums&lt;-join%&gt;%select_if(is.numeric)%&gt;%scale()%&gt;%cov
+
+join%&gt;%filter(Total_Emissions&gt;15000)%&gt;%arrange(desc(Assault_Count), desc(Robbery_Count))</code></pre>
+<pre><code>## # A tibble: 573 x 9
+##    Region `Sub Region` Country  Year Robbery_Count Assault_Count
+##    &lt;chr&gt;  &lt;chr&gt;        &lt;chr&gt;   &lt;dbl&gt;         &lt;dbl&gt;         &lt;dbl&gt;
+##  1 Ameri~ South Ameri~ Brazil   2012        979571        732913
+##  2 Ameri~ South Ameri~ Brazil   2011       1087059        717185
+##  3 Ameri~ South Ameri~ Brazil   2010       1081041        715702
+##  4 Ameri~ South Ameri~ Brazil   2006        894978        652778
+##  5 Ameri~ South Ameri~ Brazil   2009        910679        651879
+##  6 Ameri~ South Ameri~ Brazil   2008        934548        649996
+##  7 Ameri~ South Ameri~ Brazil   2007        927667        649027
+##  8 Europe Western Eur~ Germany  2007         52949        523283
+##  9 Europe Western Eur~ Germany  2008         49913        518499
+## 10 Europe Western Eur~ Germany  2006         53696        510775
+## # ... with 563 more rows, and 3 more variables: CO2_Emissions &lt;dbl&gt;,
+## #   Methane_Emissions &lt;dbl&gt;, Total_Emissions &lt;dbl&gt;</code></pre>
+<pre class="r"><code>join%&gt;%select_if(is.numeric)%&gt;%cor%&gt;%as.data.frame%&gt;%  rownames_to_column%&gt;%pivot_longer(-1)%&gt;%  ggplot(aes(rowname,name,fill=value))+geom_tile()+  geom_text(aes(label=round(value,2)))+  xlab(&quot;&quot;)+ylab(&quot;&quot;) +scale_fill_gradient2(low=&quot;black&quot;, high = &quot;red&quot;) + theme(axis.text.x=element_text(angle=90))+ggtitle(&quot;Correlation Heat Map&quot;)</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="visualizations" class="section level2">
+<h2>Visualizations</h2>
+<p>A summary graph of average emissions by region was created to demonstrate where in the world the most emissions are. Asia has the highest overall emissions while Europe, the Americas, and Oceania have about the same emissions. Africa has the lowest average emissions. The amount of emissions
+A new variable called crime was created as an indicator of a country’s overall crime. Crime was the sum of the number of assaults and number of roberies per country. The new crime variable was graphed against the total number of emissions. Most of the points appeared to cluster near 0 in a somewhat linear pattern with some outliers that were either high crime and low emissions, or high emissions and low crime. However, the overall trend appears to be positively correlated.</p>
+<pre class="r"><code>library(ggplot2)
+
+join%&gt;%ggplot(aes(Region, Total_Emissions))+geom_bar(stat=&quot;summary&quot;, fill=&quot;orangered&quot;)+labs(title=&quot;Emissions by Region&quot;, y=&quot;Average Total Emissions&quot;)+theme_classic()</code></pre>
+<pre><code>## No summary function supplied, defaulting to `mean_se()</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>join2&lt;-join%&gt;%mutate(crime=Robbery_Count+Assault_Count)
+
+ggplot(join2)+geom_point(aes(Total_Emissions, crime), color=&#39;orangered&#39;)+coord_fixed()+labs(title=&quot;Crimes by Emission Level&quot;, x=&quot;Total Emissions&quot;, y=&quot;Total Crimes&quot;)+theme_minimal()+scale_x_continuous(breaks = round(seq(min(join2$Total_Emissions), max(join2$Total_Emissions), by = 1000000),1)) +scale_y_continuous(breaks = round(seq(min(join2$crime), max(join2$crime), by = 500000),1))</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+<p>##PCs</p>
+<p>After creating a graph for the proportion of variance explained by each principle component, I decided to keep two principal components for the analysis because that seems to be where the elbow is in the graph. PC1 and PC2 are also the only two components with eigenvalues greater than 1.</p>
+<pre class="r"><code>nums&lt;-join2%&gt;%select_if(is.numeric)%&gt;%scale
+rownames(nums)&lt;-join2$Total_Emissions
+pca&lt;-princomp(nums)
+summary(pca, loadings=T)</code></pre>
+<pre><code>## Importance of components:
+##                           Comp.1    Comp.2    Comp.3    Comp.4    Comp.5
+## Standard deviation     1.9360753 1.0510854 0.9940243 0.9052387 0.5053819
+## Proportion of Variance 0.5362328 0.1580465 0.1413523 0.1172290 0.0365383
+## Cumulative Proportion  0.5362328 0.6942794 0.8356317 0.9528607 0.9893990
+##                           Comp.6       Comp.7
+## Standard deviation     0.2722193 3.152771e-08
+## Proportion of Variance 0.0106010 1.421981e-16
+## Cumulative Proportion  1.0000000 1.000000e+00
+## 
+## Loadings:
+##                   Comp.1 Comp.2 Comp.3 Comp.4 Comp.5 Comp.6 Comp.7
+## Year                      0.657  0.571  0.489                     
+## Robbery_Count      0.440        -0.305  0.320 -0.606         0.489
+## Assault_Count      0.462        -0.182  0.115  0.774         0.363
+## CO2_Emissions            -0.740  0.381  0.549                     
+## Methane_Emissions  0.417         0.406 -0.413 -0.174  0.676       
+## Total_Emissions    0.430 -0.114  0.406 -0.331        -0.726       
+## crime              0.483        -0.271  0.250               -0.793</code></pre>
+<pre class="r"><code>eigval&lt;-pca$sdev^2
+eigval</code></pre>
+<pre><code>##       Comp.1       Comp.2       Comp.3       Comp.4       Comp.5 
+## 3.748387e+00 1.104781e+00 9.880843e-01 8.194570e-01 2.554109e-01 
+##       Comp.6       Comp.7 
+## 7.410333e-02 9.939966e-16</code></pre>
+<pre class="r"><code>varprop=round(eigval/sum(eigval),2)
+ggplot()+geom_bar(aes(y=varprop,x=1:7),stat=&quot;identity&quot;)+xlab(&quot;&quot;)+geom_path(aes(y=varprop,x=1:7))+  geom_text(aes(x=1:7,y=varprop,label=round(varprop,2)),vjust=1,col=&quot;white&quot;,size=5)+  scale_y_continuous(breaks=seq(0,.6,.2),labels = scales::percent)+  scale_x_continuous(breaks=1:10)+theme_classic()+labs(y=&quot;Proportion of Variance&quot;, x=&quot;Principle Component Number&quot;, title=&quot;Proportion of Variance&quot;)</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>From the summary of PCAs, it is shown that PC1 explains the variation between total emissions, methan emissions, robberies, and assaults. It seems as the total emissions increases, so does the number of crimes. PC2 explains how emissions change over time. The emissions of methane have increased over time, but the emissions of CO2 have decreased.</p>
+<pre class="r"><code>eig&lt;-join2%&gt;%select(Total_Emissions,crime)%&gt;%cor%&gt;%eigen
+xy&lt;-join2%&gt;%select(crime, Total_Emissions)%&gt;%as.matrix
+scores&lt;--t(t(eig$vectors)%*%t(xy))%&gt;%as.data.frame()
+ggplot(scores, aes(V1,V2))+geom_point()+xlab(&quot;PC1&quot;)+ylab(&quot;PC2&quot;) + theme_classic()</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>pca$loadings[1:7,1:2]%&gt;%as.data.frame%&gt;%rownames_to_column%&gt;%ggplot()+geom_hline(aes(yintercept=0),lty=2)+  geom_vline(aes(xintercept=0),lty=2)+ylab(&quot;PC2&quot;)+xlab(&quot;PC1&quot;)+  geom_segment(aes(x=0,y=0,xend=Comp.1,yend=Comp.2),arrow=arrow(),col=&quot;red&quot;)+  geom_label(aes(x=Comp.1*1.1,y=Comp.2*1.1,label=rowname))+ggtitle(&quot;Plot of Loadings&quot;)+theme_classic()</code></pre>
+<p><img src="/Project1_files/figure-html/unnamed-chunk-7-2.png" width="672" /></p>
+<pre class="r"><code>Country&lt;-join2$Country
+pca$scores%&gt;%as.data.frame%&gt;%cbind(Country,.)%&gt;%top_n(15,Comp.1)</code></pre>
+<pre><code>##               Country    Comp.1      Comp.2    Comp.3    Comp.4
+## 1              Mexico  6.212697  1.03782068 -2.314229  2.757682
+## 2              Mexico  6.175897  1.26990499 -2.076579  2.946872
+## 3              Mexico  6.165860  1.50339912 -1.833110  3.104607
+## 4              Brazil 12.248014  0.09483711 -3.287240  1.617256
+## 5              Brazil 13.366051  0.10197786 -2.290853  1.185459
+## 6              Brazil 12.462697  0.59630146 -3.006463  2.135977
+## 7              Brazil 12.073686  0.91369445 -2.975604  2.431518
+## 8              Brazil 15.079921  0.84210366 -2.152488  2.233891
+## 9              Brazil 15.288485  1.05426539 -1.815771  2.306011
+## 10             Brazil 14.844640  1.21488269 -1.183587  2.075737
+## 11              India  6.147832 -0.01778286  3.485173 -3.612155
+## 12              India  6.387969  0.19227912  3.803385 -3.524182
+## 13              India  6.586261  0.41345446  4.046052 -3.365981
+## 14              India  7.031463  0.60983435  4.312236 -3.221170
+## 15 Russian Federation  5.986757 -1.72404011  2.540471 -2.174981
+##         Comp.5      Comp.6        Comp.7
+## 1  -1.99370529 -0.06907615 -8.881784e-15
+## 2  -2.19767379 -0.10004570 -1.021405e-14
+## 3  -2.16079467 -0.10854165 -9.769963e-15
+## 4   0.06789444  0.89393027  5.329071e-15
+## 5  -0.16749757 -0.63686124  2.664535e-15
+## 6  -0.13807389  1.10996758  3.552714e-15
+## 7   0.02503011  1.58242862  4.440892e-15
+## 8  -0.39039612 -0.67416800  0.000000e+00
+## 9  -0.43999010 -0.56576462  8.881784e-16
+## 10  0.21895455 -0.51613404  3.552714e-15
+## 11  0.92656585  0.78474221  6.550316e-15
+## 12  1.00865264  0.54661139  6.883383e-15
+## 13  1.11586032  0.53268739  7.438494e-15
+## 14  1.31821308  0.36674265  8.215650e-15
+## 15 -2.39482977 -0.53982772 -1.088019e-14</code></pre>
+<pre class="r"><code>pca$scores%&gt;%as.data.frame%&gt;%cbind(Country,.)%&gt;%top_n(3,Comp.2)</code></pre>
+<pre><code>##   Country     Comp.1   Comp.2    Comp.3    Comp.4       Comp.5
+## 1 Burundi -0.7650898 1.740049 0.4152912 0.3388170 -0.020691893
+## 2  Rwanda -0.7535612 1.735054 0.4160087 0.3413993  0.009325632
+## 3  Uganda -0.4962320 1.706434 0.4980804 0.2632403  0.088038776
+##         Comp.6        Comp.7
+## 1 -0.007576093 -4.996004e-16
+## 2 -0.002908708 -3.330669e-16
+## 3  0.030867171  1.110223e-16</code></pre>
+<p>A plot of loadings graph was generated that showed crime, methane emissions, and total emissions were highly correlated and contributing to PC1. CO2 emissions and year were not correlated with the other factors and contributed more to PC2. The reason CO2 emissions are highly correlated with crime may be because countries that produce a high amount of CO2 are generally more developed nations with economies involved in manufacturing. Wealth can contribute to decreased crimes, so CO2 emissions may be indicative of the countries overall wealth. Methane is a greenhouse gas generally produced in agriculture, which is a more important contributor to the economy in less developed nations. As such, PC1 can be considered the relative wealth axis, while PC2 is the emissions over time axis.
+The largest contributing countries to PC1 are Mexico, Brazil, and India. The countries contributing the most to PC2 are Burundi, Rwanda, and Uganda</p>
+</div>
+
+              <hr>
+              <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div>
+            </div>
+          </div>
+          <hr>
+        <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+        </div>
+      </div>
+      
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="/js/docs.min.js"></script>
+<script src="/js/main.js"></script>
+
+<script src="/js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>
